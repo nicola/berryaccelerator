@@ -7,6 +7,9 @@ This is a small node-js package that once loaded in your robot-raspberry pie, se
 1. If connected with a **mobile phone** with accelerators enabled, it will start move as you move your phone.
 2. If connected with a computer, you will have a control panel where you can command your robot or see sensor readers
 
+![Robot](https://raw.github.com/nicolagreco/Node-BERRY-Accelerator/master/machine.gif)
+
+
 ## How to install
 
 Install nodejs on the machine (you can also test it on the simulator - you still need node-js)
