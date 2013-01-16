@@ -1,5 +1,5 @@
 {
-  "name": "node-boss-accelerator",
+  "name": "node-berry-accelerator",
   "version": "0.0.1",
   "description": "Command your robot with a mobile phone",
   "author": {
@@ -9,7 +9,7 @@
   "main": "./server.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/nicolagreco/node-boss-accelerator.git"
+    "url": "git://github.com/nicolagreco/node-berry-accelerator.git"
   },
   "readmeFilename": "README.md",
   "dependencies": {

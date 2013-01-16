@@ -1,4 +1,4 @@
-BOSS - Accelerators with NodeJS and RaspberryPI
+BERRY - Accelerators with NodeJS and RaspberryPI
 ===============================================
 
 This package has been made for UCL-CS robots.
@@ -20,7 +20,7 @@ Install nodejs on the machine (you can also test it on the simulator - you still
 
 You may also want to install `npm`. In case you have problems installing node, run `make test`.
 
-Once installed, set up BOSS' environment:
+Once installed, set up BERRY's environment:
 
     npm install .
 
