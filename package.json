@@ -1,0 +1,20 @@
+{
+  "name": "node-boss-accelerator",
+  "version": "0.0.1",
+  "description": "Command your robot with a mobile phone",
+  "author": {
+    "name": "Nicola Greco",
+    "email": "notsecurity@gmail.com"
+  },
+  "main": "./server.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nicolagreco/node-boss-accelerator.git"
+  },
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "socket.io": ">=0.0.0",
+    "http": ">=0.0.0",
+    "fs": ">=0.0.0"
+  }
+}

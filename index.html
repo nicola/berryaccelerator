@@ -1,0 +1,167 @@
+<html>
+<head>
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    * {
+           font-family: "Helvetica Neue", Helvetica; 
+    }
+    #up, #left,#right, #down {
+      padding: 40px;
+      background: #dfdfdf;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      font-size: 60px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    #off {
+      background: #eb0033;
+      border-radius: 400px;
+      padding: 10px;
+      float: right;
+      text-transform: uppercase;
+      color: #fff;
+      font-size: 18px;
+    }
+    #machine {
+      height: 50%;
+    }
+    #encoders {
+      padding: 30px;
+    }
+    .center {
+      text-align:center;
+    }
+    @media (max-width: 500px) {
+      #up, #left,#right, #down {
+        display: none;
+      }
+      #machine {
+        width: 90%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button id="up">Up</button>
+    <button id="left">Left</button>
+    <button id="right">Right</button>
+    <button id="down">Down</button>
+    <button id="off">Turn on</button>
+  </header>
+  <section>
+  </section>
+  <footer>
+    <div id="melr">ENCODERS: <span id="mel"></span> <span id="mer"></span></div>
+    <div id="iflr">RANGE (FRONT): <span id="ifl"></span> <span id="ifr"></span></div>
+    <div id="islr">RANGE (SIDE): <span id="isl"></span> <span id="isr"></span></div>
+    <div id="iblcr">REFLECT: <span id="ibl"></span> <span id="ibc"></span> <span id="ibr"></span></div>
+    <img src="/machine.gif" id="machine"/>
+    <h3 class="center">MOVE YOUR PHONE TO COMMAND YOUR ROBOT</h3>
+  </footer>
+  <script>
+  var socket = io.connect();
+  var count= 0; var count2= 0;
+  var on = false;
+
+  window.onload = function () {
+    var up, left, right, down, off;
+
+    // Desktop commands
+    up = document.getElementById('up');
+    left = document.getElementById('left');
+    right = document.getElementById('right');
+    down = document.getElementById('down');
+    mel = document.getElementById('mel');
+    mer = document.getElementById('mer');
+    ifl = document.getElementById('ifl');
+    ifr = document.getElementById('ifr');
+    isl = document.getElementById('isl');
+    isr = document.getElementById('isr');
+    ibl = document.getElementById('ibl');
+    ibc = document.getElementById('ibc');
+    ibr = document.getElementById('ibr');
+    off = document.getElementById('off');
+    off.onmousedown = function() { on=!on;
+      if (on){ off.innerText="TURN OFF" } else { off.innerText="TURN ON" }
+    }
+    holdit(up, function(){socket.emit('cmd', { cmd: 'M LR 30 30\n' });}, 100, 1);
+    holdit(down, function(){socket.emit('cmd', { cmd: 'M LR -30 -30\n' });}, 100, 1);
+    holdit(left, function(){socket.emit('cmd', { cmd: 'M LR -30 30\n' });}, 100, 1);
+    holdit(right, function(){socket.emit('cmd', { cmd: 'M LR 30 -30\n' });}, 100, 1);
+
+    // Press and hold to move
+    function holdit(btn, action, start, speedup) {
+      var t;
+      var repeat = function () {
+        action();
+        t = setTimeout(repeat, start);
+        start = start / speedup;
+      }
+      btn.onmousedown = function() { repeat(); }
+      btn.onmouseup = function () { clearTimeout(t); socket.emit('cmd', { cmd: 'M LR 0 0\n' }); }
+    }
+
+    // Elaborate phone motion
+    function onDeviceMotion(event){
+      var accel = event.accelerationIncludingGravity;
+      var valid = false;
+      var ax = 0; var ay = 0;
+      if (!on) return;
+      if (accel.y > 0.1) {
+        valid = true;
+        l = accel.y*12; r = accel.y*12;
+        if (accel.x < -4)  { r -= (accel.x)*3 }
+        else if (accel.x > 4) { l += (accel.x)*3 }
+
+      } else if (accel.y < -6) {
+        valid = true;
+        l =  accel.y*3; r = accel.y*3;
+        if (accel.x < -2)  { r += (accel.x)*3 }
+        else if (accel.x > 2) { l -= (accel.x)*3 }
+
+      } else if (accel.x < -3)  { valid = true; l = +accel.x*2.8; r = -accel.x*2.8; }
+      else if (accel.x > 3) { valid = true; l = +accel.x*2.8; r = -accel.x*2.8; }
+
+      if (valid) { socket.emit('cmd', { cmd: 'M LR '+Math.ceil(l)+' '+Math.ceil(r)+'\n' });
+      } else { count2 +=1;
+        if ((count2 % 3) == 0 ) { socket.emit('cmd', { cmd: 'M LR 0 0\n' });}
+      }
+    }
+    window.addEventListener("devicemotion",onDeviceMotion,false);
+
+  }
+
+  function delayedOp(seconds, action) {
+    var t;
+    var repeat = function () { action(); t = setTimeout(repeat, seconds); }
+    repeat();
+  }
+
+  delayedOp(2000, function(){ if (on) socket.emit('cmd', { cmd: 'S MELR\n' });});
+  delayedOp(2100, function(){ if (on) socket.emit('cmd', { cmd: 'S IFLR\n' });});
+  delayedOp(2200, function(){ if (on) socket.emit('cmd', { cmd: 'S ISLR\n' });});
+  delayedOp(2300, function(){ if (on) socket.emit('cmd', { cmd: 'S IBLCR\n' });});
+  socket.on('news', function (data) {
+    console.log(data);
+  });
+  socket.on('melr', function (data) {
+    console.log("s");
+    mer.innerText = data.r; mel.innerText = data.l;
+  });
+  socket.on('iflr', function (data) {
+    ifr.innerText = data.r; ifl.innerText = data.l;
+  });
+  socket.on('islr', function (data) {
+    isr.innerText = data.r; isl.innerText = data.l;
+  });
+  socket.on('iblcr', function (data) {
+    ibl.innerText = data.l; ibc.innerText = data.c; ibr.innerText = data.r;
+  });
+
+  </script>
+  </body>
+</html>
