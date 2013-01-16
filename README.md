@@ -5,7 +5,7 @@ This package has been made for UCL-CS robots.
 This is a small node-js package that once loaded in your robot-raspberry pie, set up a webserver at the address of the machine (e.g. http://128.16.79.12:55555). Once connected to the address:
 
 1. If connected with a **mobile phone** with accelerators enabled, it will start move as you move your phone.
-2. If connected with a computer, you will have a control panel where you can command your robot or see sensor readers
+2. If connected with a **computer**, you will have a control panel where you can command your robot or see sensor readers
 
 ![Robot](https://raw.github.com/nicolagreco/Node-BERRY-Accelerator/master/machine.gif)
 
@@ -32,7 +32,7 @@ And now you are ready to execute it:
   node server.js IPADDRESS PORT
   // in case you want to connect locally 127.0.0.1 55443
 
-You can access it through localhost, or from multiple devices through the computer address where
+You can access it through localhost, or from multiple devices through the computer address where hosted.
 
 ## Technologies used
 
