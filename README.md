@@ -20,7 +20,6 @@ Once installed, set up BERRY's environment:
 And now you are ready to execute it:
 
   node server.js ROBOTIP PORT
-  // in case you want to connect locally 127.0.0.1 55443
 
 You can access it through localhost, or from multiple devices through the computer address where hosted.
 
